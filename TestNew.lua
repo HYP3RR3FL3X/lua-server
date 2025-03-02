@@ -1,4 +1,27 @@
-local vm={stack={},instructions={},ip=1}local identityFunc=printidentity or function()end identityFunc("Wave Executor running")function vm:push(value)print("PUSH: "..tostring(value))table.insert(self.stack,value)end function vm:pop()local v=table.remove(self.stack)print("POP: "..tostring(v))return v end function vm:run()while self.ip<=#self.instructions do local inst=self.instructions[self.ip]print("Executing: "..inst.op)if inst.op=="PUSH"then self:push(inst.value)elseif inst.op=="PUSH_NUM"then self:push(inst.value)elseif inst.op=="ADD"then local b=self:pop()local a=self:pop()local result=a+b self:push(result)elseif inst.op=="CALL"then local func=inst.func=="print" and print or _G[inst.func]if type(func)=="function" then local args={}for i=1,inst.arg_count do table.insert(args,1,self:pop())end print("Calling "..inst.func.." with args: "..table.concat(args,","))local success,err=pcall(func,unpack(args))if not success then print("Error calling "..inst.func..": "..tostring(err))end else print("Function "..inst.func.." not callable, type: "..type(func))end end self.ip=self.ip+1 end end
-local bytecode={{op="PUSH",value="hello"},{op="CALL",func="print",arg_count=1}}
-vm.instructions=bytecode
-vm:run()
+-- Define variables
+local isReady = true
+local myFunc = nil
+local someValue = 42
+
+-- Debug: Confirm isReady is set correctly
+print("isReady after definition: ", isReady, " type: ", type(isReady))
+
+-- Define a function
+local function greet(name)
+    print("Hello, " .. name)
+end
+
+-- Attempt to call a boolean
+if isReady then
+    print("isReady before call: ", isReady, " type: ", type(isReady))
+    isReady()  -- This may cause an error if isReady is not a function
+end
+
+-- Attempt to call a nil value
+myFunc()  -- This may cause an error if myFunc is nil
+
+-- Correct function call
+greet("World")
+
+-- Another potential error: calling a number
+someValue()  -- This may cause an error if someValue is not a function
