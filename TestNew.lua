@@ -1,14 +1,13 @@
 local vm={stack={},instructions={},ip=1,vars={}}local output_log=""
 local insert=table and table.insert or function()end
 local remove=table and table.remove or function()end
-local concat=table and table.concat or function()end
+local concat=table and table.concat or function()return""end
 local tostring=tostring or function(v)return v end
 local pcall=pcall or function()end
 local unpack=unpack or function()end
-print("table:", table, "type:", type(table))
-print("tostring:", tostring, "type:", type(tostring))
-print("pcall:", pcall, "type:", type(pcall))
-print("unpack:", unpack, "type:", type(unpack))
+local type=type or function()return"unknown"end
+local print=print or function()end
+local warn=warn or function()end
 local identityFunc=printidentity or function()end
 identityFunc("Wave Executor running")
 function vm:log(msg)print(msg)output_log=output_log..msg.."
