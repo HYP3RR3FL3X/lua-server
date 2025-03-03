@@ -1,16 +1,9 @@
-local vm={stack={},r={},ip=1,constants={},code={}}local output_log=""
-local tostring=tostring or function(v)return v end
-local pcall=pcall or function()end
-local unpack=unpack or function()end
-local print=print or function()end
-local warn=warn or function()end
-function vm:log(msg)print(msg)output_log=output_log..msg.."
-"end
-function vm:push(value)self:log("PUSH: "..tostring(value))table.insert(self.stack,value)end
-function vm:pop()local v=table.remove(self.stack)self:log("POP: "..tostring(v))return v end
-function vm:get_reg(reg)self:log("GET_REG: r["..reg.."]="..tostring(self.r[reg]))return self.r[reg]end
-function vm:set_reg(reg,value)self:log("SET_REG: r["..reg.."]="..tostring(value))self.r[reg]=value end
-function vm:run()self:log("LuaRPH-like VM Starting")while self.ip<=#self.code do local inst=self.code[self.ip]self:log("Executing: "..inst.op.." at ip: "..self.ip)if inst.op=="MOVE"then local src=inst.src local dst=inst.dst local val=self:get_reg(src)self:set_reg(dst,val)self.ip=self.ip+1 elseif inst.op=="LOADK"then local reg=inst.reg local k=inst.k self:set_reg(reg,self.constants[k])self.ip=self.ip+1 elseif inst.op=="ADD"then local a=inst.a local b=inst.b local c=inst.c local val1=self:get_reg(b)local val2=self:get_reg(c)local result=val1+val2 self:set_reg(a,result)self.ip=self.ip+1 elseif inst.op=="CALL"then if inst.func=="print" then local args={}for i=1,inst.arg_count do table.insert(args,1,self:pop())end self:log("Calling print with args: "..table.concat(args,","))print(unpack(args))else self:log("Unsupported function: "..inst.func)end self.ip=self.ip+1 elseif inst.op=="JMP"then self:log("JMP: offset: "..inst.offset) self.ip=self.ip+inst.offset self:log("Jumping to ip: "..self.ip)elseif inst.op=="JMPZ"then local condition=self:pop()self:log("JMPZ: condition: "..tostring(condition)..", offset: "..inst.offset) if condition==0 then self.ip=self.ip+inst.offset self:log("Jumping to ip: "..self.ip)else self.ip=self.ip+1 end else self:log("Unknown opcode: "..inst.op) self.ip=self.ip+1 end end self:log("LuaRPH-like VM Finished")if setclipboard then local success,err=pcall(setclipboard,output_log) if not success then print("Failed to copy to clipboard: "..tostring(err)) end else print("setclipboard not supported in this environment") end end
-vm.constants={"hello",5,3,"x is greater than 5","x is not greater than 5","x equals 8","x does not equal 8","x is less than 10","x is not less than 10",8,10}
-vm.code={{op="LOADK",reg=0,k=0},{op="CALL",func="print",arg_count=1},{op="LOADK",reg=1,k=1},{op="LOADK",reg=2,k=2},{op="ADD",a=3,b=1,c=2},{op="SET_VAR",var_name="x"},{op="GET_VAR",var_name="x"},{op="CALL",func="print",arg_count=1},{op="GET_VAR",var_name="x"},{op="LOADK",reg=5,k=1},{op="CMP",cmp_type="GT"},{op="JMPZ",offset=3},{op="LOADK",reg=6,k=3},{op="CALL",func="print",arg_count=1},{op="JMP",offset=2},{op="LOADK",reg=7,k=4},{op="CALL",func="print",arg_count=1},{op="LOADK",reg=8,k=3},{op="CALL",func="print",arg_count=1},{op="LOADK",reg=9,k=4},{op="CALL",func="print",arg_count=1},{op="GET_VAR",var_name="x"},{op="LOADK",reg=10,k=9},{op="CMP",cmp_type="EQ"},{op="JMPZ",offset=3},{op="LOADK",reg=11,k=5},{op="CALL",func="print",arg_count=1},{op="JMP",offset=2},{op="LOADK",reg=12,k=6},{op="CALL",func="print",arg_count=1},{op="LOADK",reg=13,k=5},{op="CALL",func="print",arg_count=1},{op="LOADK",reg=14,k=6},{op="CALL",func="print",arg_count=1},{op="GET_VAR",var_name="x"},{op="LOADK",reg=15,k=10},{op="CMP",cmp_type="LT"},{op="JMPZ",offset=3},{op="LOADK",reg=16,k=7},{op="CALL",func="print",arg_count=1},{op="JMP",offset=2},{op="LOADK",reg=17,k=8},{op="CALL",func="print",arg_count=1},{op="LOADK",reg=18,k=7},{op="CALL",func="print",arg_count=1},{op="LOADK",reg=19,k=8},{op="CALL",func="print",arg_count=1}}
+local vm={stack={},instructions={},ip=1,vars={}}
+local output_log=""
+local identityFunc=function()end
+identityFunc("Wave Executor running")
+function vm:log(msg)print(msg)output_log=output_log..msg.."\n"end
+function vm:run()while self.ip<=#self.instructions do self.ip=self.ip+1 end end
+vm.constants={}
+vm.code={}
 vm:run()
