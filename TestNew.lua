@@ -1,19 +1,18 @@
 local vm={stack={}}
 local output_log=""
-local type=type or function()return"unknown"end
-local print=type(print)=="function" and print or function()end
+local print=print or function()end
 function vm:log(msg)
-    print("Logging: type of print is "..type(print))
+    print("Logging: print is a function")
     print(msg)
     output_log=output_log..msg.."
 "
 end
 function vm:run()
-    print("Before loop: type of print is "..type(print))
+    print("Before loop: print is a function")
     self:log("LuaRPH-like VM Starting")
-    print("After first log: type of print is "..type(print))
+    print("After first log: print is a function")
     while self.ip<=#self.code do
-        print("Inside loop: type of print is "..type(print))
+        print("Inside loop: print is a function")
         local inst=self.code[self.ip]
         self:log("Executing: "..inst.op.." at ip: "..self.ip)
         self.ip=self.ip+1
